@@ -16,7 +16,7 @@ var net = require('net'),
 var databaseUrl = "weatherdb"; // "username:password@example.com/mydb"
 
 //Name of the collections
-var collections = ["raw_data", "data_reports"]
+var collections = ["raw_data", "data_reports"]  //raw_data contains the data as obtained ....//data_reports contains daily/periodic reports generated on data.
 
 //Connect to the database - using the module mongojs - which exposes mongodb like API to node
 var db = require("mongojs").connect(databaseUrl, collections);
@@ -54,12 +54,14 @@ socket.on('data', function(data) {
         
   console.log('DATA ' + socket.remoteAddress + ': ' + data);
 
-  var weatherdata = data.livedata;
-                
+  io.sockets.emit('livedata', { livedata: data });
+
+  //var weatherdata = data.livedata;
+  
   //Parse the output from weather station into local variables that contain individual sensor's values
-                
-                //Split to get the array
-  var dataArray = weatherdata.split(",");
+     
+  //Split to get the array
+  var dataArray = data.split(",");
                 
   //To read about the format of returned string: refer to DT80 manual Pg: 22
   var recordType = dataArray[0];
@@ -78,20 +80,28 @@ socket.on('data', function(data) {
   var fifthData = dataArray[12];          //Wind Direction
   var sixthData = dataArray[13];          //Wind Speed
   var seventhData = dataArray[14];        //Rain    
-  var lastData = dataArray[15].split(";")     
-  var eighthData = lastData[0];            //Solar Radiation    
+  //ar lastData = dataArray[15].split(";")     
+  //var eighthData = lastData[0];            //Solar Radiation    
   //var ninthData = dataArray[17];         //CRC error check   
 
-  db.raw_data.insert({"email": "srirangan@gmail.com", "password": "iLoveMongo", "sex": "male"}, function(err, saved) {
-  if( err || !saved ) console.log("User not saved");
-  else console.log("User saved");
+  //Insert the data in database - as a JSON object. 
+  db.raw_data.insert({"date": date, 
+                      "time": time, 
+                      "subsec": subsec, 
+                      "Temperature" : firstData, 
+                      "Humidity" : secondData, 
+                      "Atmospheric Pressure" : thirdData,
+                      "Wind Direction" : fifthData,
+                      "Wind Speed" : sixthData,
+                      "Rain" : seventhData
+                      }, function(err, saved) {
+  if( err || !saved ) console.log("Data not saved");
+  else console.log("Data saved");
 });
-
-  io.sockets.emit('livedata', { livedata: data });
 });
 
 socket.on('end', function() {
   console.log('socket closing...');
 });
   
-app.listen(3000);
+app.listen(60000);
