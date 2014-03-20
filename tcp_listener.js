@@ -4,7 +4,7 @@
 var net = require('net'),
     http = require('http'),
     port = 7700,                    // Datalogger port
-    host = '172.16.105.27',         // Datalogger IP address
+    host = '172.16.105.233',         // Datalogger IP address
     fs = require('fs'),
     // NEVER use a Sync function except at start-up!
     index = fs.readFileSync(__dirname + '/index.html');
@@ -80,9 +80,9 @@ socket.on('data', function(data) {
   var fifthData = dataArray[12];          //Wind Direction
   var sixthData = dataArray[13];          //Wind Speed
   var seventhData = dataArray[14];        //Rain    
-  //ar lastData = dataArray[15].split(";")     
-  //var eighthData = lastData[0];            //Solar Radiation    
-  //var ninthData = dataArray[17];         //CRC error check   
+  var lastData = dataArray[15].split(";");     
+  var eighthData = lastData[0];            //Solar Radiation    
+  var ninthData = dataArray[17];         //CRC error check   
 
   //Insert the data in database - as a JSON object. 
   db.raw_data.insert({"date": date, 
@@ -93,7 +93,8 @@ socket.on('data', function(data) {
                       "Atmospheric Pressure" : thirdData,
                       "Wind Direction" : fifthData,
                       "Wind Speed" : sixthData,
-                      "Rain" : seventhData
+                      "Rain" : seventhData, 
+                      "Solar Radiation" : eighthData
                       }, function(err, saved) {
   if( err || !saved ) console.log("Data not saved");
   else console.log("Data saved");
@@ -104,4 +105,4 @@ socket.on('end', function() {
   console.log('socket closing...');
 });
   
-app.listen(60000);
+app.listen(3000);
