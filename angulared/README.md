@@ -4,7 +4,8 @@ To use the app:
   
 2. Download angular-seed from https://github.com/angular/angular-seed/tree/v0.10.x  -- This is the old version of angular-seed.     
 
-3. Locate the file /scripts/web-server.js and replace with the one provided here. 
+3. Locate the file /scripts/web-server.js and replace with the one provided here. Change the file /app/js/controller.js with the one provided here. Change file /app/index.html with the one provided here.
+
 
 4. Run node /scripts/web-server.js to run the server from the base directory. This server up all the pages and also retrieves data from the datalogger. 
 
