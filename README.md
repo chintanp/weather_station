@@ -3,8 +3,13 @@ weather_station
 
 All the code related to weather station
 
+To view the angular version of the langind page, go to the folder - angulared. 
 
-* tcp_listener.js - Reads data from datalogger - sends to database and to the UI. - Code still not ideal - must be able to update the logic of sensor data parsing and database insert based on the channel definition in datalogger configuration so that the change is reflected everywhere.  
+Static version with jQuery uses- 
+
+* tcp_listener.js - Reads data from datalogger - sends to database and to the UI.
           
-* index.html - Displays the sensor data after some bootstraping. Uses jQuery right now, change to AngularJS and make more robust. For some beautiful charts from weather data - patchup with AngularJS with chartJS http://plnkr.co/6UWhFe
+* index.html - Displays the sensor data after some bootstraping. 
+ 
+For some beautiful charts from weather data - patchup with AngularJS with chartJS http://plnkr.co/6UWhFe
 
