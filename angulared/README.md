@@ -20,6 +20,8 @@ Troubleshooting:
 
 2. The data returned from the datalogger should in the human-readable format. i.e. \h switch, this is the default. 
 
+3. The returned data can be further formatted as shown in the manual [here](https://drive.google.com/file/d/0B9fbkDTtTJfSdk5GdW9YZ2l5VVE/edit?usp=sharing).
+
 
 
 
