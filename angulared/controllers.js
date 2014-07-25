@@ -59,7 +59,7 @@ weatherApp.controller('WeatherDataCtrl', function($scope, socket) {
 		      localObject.push({"sensor" : sensorName, "value": sensorValue, "unit" : sensorUnit });
 		      }  
 	  	}
-	  	
+
 	  	$scope.weatherdata =  localObject;
 	  	//debugger;
 	  	console.log($scope.weatherdata.length);
@@ -68,10 +68,10 @@ weatherApp.controller('WeatherDataCtrl', function($scope, socket) {
 
 
 weatherApp.factory('socket', function($rootScope) {
-	
+
 	//Connect to the socket and expose events
 
-	var socket = io.connect("//localhost:3000");
+	var socket = io.connect("172.16.12.33:3000");
 	return {
 		on: function(eventName, callback) {
 			socket.on(eventName, function() {
