@@ -11,7 +11,7 @@ To use the app:
 
 5. Install mongodb and run mongod --dbpath "path-to-db", to save the data to the database. 
 
-6. Open chrome to http://localhost:8000/app/index.html, and see the angular app in action. 
+6. Open chrome to http://server-ip-addr:8000/app/index.html, and see the angular app in action. 
 
 Troubleshooting: 
 
@@ -21,6 +21,8 @@ Troubleshooting:
 2. The data returned from the datalogger should in the human-readable format. i.e. \h switch, this is the default. 
 
 3. The returned data can be further formatted as shown in the manual [here](https://drive.google.com/file/d/0B9fbkDTtTJfSdk5GdW9YZ2l5VVE/edit?usp=sharing).
+
+4. Change the server ip address in the index.html file and controllers.js to reflect the current server config. This is required for socket.io to function. Also check whether this is secure. 
 
 
 
