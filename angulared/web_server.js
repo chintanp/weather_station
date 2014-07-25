@@ -64,7 +64,7 @@ tcp_socket.on('data', function(data) {
         
   console.log('DATA ' + tcp_socket.remoteAddress + ': ' + data);
 
-  
+  io.sockets.emit('livedata', { livedata: data });
 
   //var weatherdata = data.livedata;
   
@@ -88,63 +88,29 @@ tcp_socket.on('data', function(data) {
       console.log(sensorName + " : " + sensorValue + " : " + sensorUnit );
 
       //Adding data to the dbObject data
-      dbObject.push({"sensor" : sensorName, "value": sensorValue, "unit" : sensorUnit });
+      // dbObject.push({"sensor" : sensorName, "value": sensorValue, "unit" : sensorUnit });
     }  
   }
   
-  //Convert the object to string
+  /*//Convert the object to string
   JSON.stringify(dbObject);
-  console.log(typeof(dbObject));
+  console.log(dbObject)
   
-  io.sockets.emit('livedata', { livedata: data });
   //Insert into Mongodb database
   db.raw_data.insert(dbObject, function(err, saved){
     if( err || !saved ) console.log("Data not saved");
     else console.log("Data saved");
-  });
+  });*/
 
-  //To read about the format of returned string: refer to DT80 manual Pg: 22
-  // var recordType = dataArray[0];
-  // var serialNumber = dataArray[1];
-  // var jobName = dataArray[2];
-  // var date = dataArray[3];
-  // var time = dataArray[4];
-  // var subsec = dataArray[5];
-  // var realtime = dataArray[6];
-  // //var schedule = dataArray[7];          //Schedule is preceded by a semi-colon
-  // var indexFirst = dataArray[7];
-  // var firstData = dataArray[8];           //Temperature
-  // var secondData = dataArray[9];         //Humidity
-  // var thirdData = dataArray[10];          //Atmospheric Pressure
-  // var fourthData = dataArray[11];         //Internal Temperature
-  // var fifthData = dataArray[12];          //Wind Direction
-  // var sixthData = dataArray[13];          //Wind Speed
-  // var seventhData = dataArray[14];        //Rain    
-  // var lastData = dataArray[15].split(";");     
-  // var eighthData = lastData[0];            //Solar Radiation    
-  // var ninthData = dataArray[17];         //CRC error check   
-
-  // //Insert the data in database - as a JSON object. 
-  // db.raw_data.insert({"date": date, 
-  //                     "time": time, 
-  //                     "subsec": subsec, 
-  //                     "Temperature" : firstData, 
-  //                     "Humidity" : secondData, 
-  //                     "Atmospheric Pressure" : thirdData,
-  //                     "Wind Direction" : fifthData,
-  //                     "Wind Speed" : sixthData,
-  //                     "Rain" : seventhData, 
-  //                     "Solar Radiation" : eighthData
-  //                     }, function(err, saved) {
-  // if( err || !saved ) console.log("Data not saved");
-  // else console.log("Data saved");
-  // });
+ 
 });
 
 tcp_socket.on('end', function() {
   console.log('socket closing...');
 });
-  
+
+var http_host = "172.16.12.33"; 
+
 app.listen(3000);
 
 /* _______________________________________________________________________ */
