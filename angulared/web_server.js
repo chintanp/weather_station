@@ -3,10 +3,21 @@
 var util = require('util'),
     http = require('http'),
     fs = require('fs'),
-    net = require('net'),           // For TCP communication with datalogger
+    net = require('net'),             // For TCP communication with datalogger
     url = require('url'),
     events = require('events'),
-    path = require('path');         //For manipulating file-paths
+    path = require('path'),           //For manipulating file-paths
+    request = require('request');       // For uploading data to other websites  
+
+// Latitudes and longitudes, will not change for our AWS, but may change 
+var latitude = 22.65587;
+var longitude = 75.82626;
+
+// These are required for uploading data to openweathermap.org
+var username = "IPS Academy",
+    password = "neotao",
+    url_owm = 'http://' + username + ':' + password + '@openweathermap.org/data/post';
+
 
 //For Communication with the Datalogger
 var TCP_PORT = 7700;
@@ -74,42 +85,73 @@ tcp_socket.on('data', function(data) {
   var dataArray = new Array();
   var dbObject = [];
 
-  //Split to get the array
+  //'data' contains the data from the weather station -> Split to get the array
   var dataArray = data.split("\r\n");
 
+  //Creating the string for inserting in db here
+  var dbString = {
+    "lat" : latitude.toString(),
+    "long" : longitude.toString(),
+    "date" : dataArray[0].split(" ")[1],
+    "time" : dataArray[1].split(" ")[1],
+    "temp_c" : dataArray[2].split(" ")[1],
+    "humidity" : dataArray[3].split(" ")[1],
+    "pressure_mbar" : dataArray[4].split(" ")[1],
+    "wind_dir" : dataArray[5].split(" ")[1],
+    "wind_speed_mps" : dataArray[6].split(" ")[1],
+    "rain_mm" : dataArray[7].split(" ")[1],
+    "solar_rad_wpsqm": dataArray[8].split(" ")[1]
+  };
 
-  for(var i = 0; i < dataArray.length-1; i++) {
+  JSON.stringify(dbString);
 
-    //console.log(dataArray[i]);
-    if(dataArray[i].split(" ")[0] != '') {
-      sensorName = dataArray[i].split(" ")[0];
-      sensorValue = dataArray[i].split(" ")[1] ;
-      sensorUnit = dataArray[i].split(" ")[2] ;
-      console.log(sensorName + " : " + sensorValue + " : " + sensorUnit );
+  db.raw_data.insert(dbString, function(err, saved){
+      if( err || !saved ) console.log("Data not saved");
+      else console.log("Data saved");
+    });
 
-      //Adding data to the dbObject data
-      // dbObject.push({"sensor" : sensorName, "value": sensorValue, "unit" : sensorUnit });
-    }  
-  }
-  
-  /*//Convert the object to string
-  JSON.stringify(dbObject);
-  console.log(dbObject)
-  
-  //Insert into Mongodb database
-  db.raw_data.insert(dbObject, function(err, saved){
-    if( err || !saved ) console.log("Data not saved");
-    else console.log("Data saved");
-  });*/
+    // Upload data to openweathermap.org
+  request.post(url_owm, {form:{'temp':dbString.temp_c, 
+                              'wind_dir': dbString.wind_dir,
+                              'wind_speed': dbString.wind_speed_mps,
+                              'humidity': dbString.humidity,
+                              'pressure': dbString.pressure_mbar,
+                              'lat': dbString.lat,
+                              'long': dbString.long,
+                              'lum': dbString.solar_rad_wpsqm,
+                              'name': "AWSIES1"
+                              }}, function optionalCallback (err, httpResponse, body) {
+    if (err) {
+      return console.error('upload failed:', err);
+    }
+    console.log('Upload successful on OWM!  Server responded with:', body);
+  });
 
- 
+  // http://www.pwsweather.com/pwsupdate/pwsupdate.php?ID=AWSIES1&PASSWORD=neotao&dateutc=2014-07-31+15%3A20%3A01&winddir=225&windspeedmph=0.0&windgustmph=0.0&tempf=34.88&rainin=0.06&dailyrainin=0.06&monthrainin=1.02&yearrainin=18.26&baromin=29.49&dewptf=30.16&humidity=83&weather=OVC&solarradiation=183&UV=5.28&softwaretype=Examplever1.1&action=updateraw
+  // Upload data to pwsweather.com
+  var url_pws = "http://www.pwsweather.com/pwsupdate/pwsupdate.php?ID=AWSIES1&PASSWORD=neotao";
+  url_pws += "&dateutc=" + dbString.date.replace('/', '-').replace('/','-') + "+" + dbString.time;
+  url_pws += "&winddir=" + dbString.wind_dir;
+  url_pws += "&windspeedmph=" + 2.23693*dbString.wind_speed_mps;
+  url_pws += "&tempf=" + ((9/5)*dbString.temp_c + 32);
+  url_pws += "humidity=" + dbString.humidity;
+  url_pws += "solarradiation=" + dbString.solar_rad_wpsqm;
+  url_pws += "&action=updateraw";
+
+  console.log(url_pws);
+  request.get(url_pws, function optionalCallback (err, httpResponse, body) {
+    if (err) {
+      return console.error('upload failed:', err);
+    }
+    console.log('Upload successful on PWS!  Server responded with:', body);
+  });
+
 });
 
 tcp_socket.on('end', function() {
   console.log('socket closing...');
 });
 
-var http_host = "172.16.12.33"; 
 
 app.listen(3000);
 
