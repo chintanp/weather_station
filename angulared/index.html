@@ -5,16 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
         <!--Bootstrap-->
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-
-        <!--jQuery-->
-        <script src='http://code.jquery.com/jquery-1.7.2.min.js'></script>
         
         <!--Socket.io -->
         <script src='http://172.16.12.33:3000/socket.io/socket.io.js'></script>
 
         <!--Angular -->
-        <script src="lib/angular/angular.js"></script>
+        
+        <!-- Libraries -->
+        <script src="lib/angular/angular.min.js"></script>
+        
+        
+        <!-- Controllers -->
         <script src="js/controllers.js"></script>
+        
+        <!-- d3.js for visualisation -->
+
         <script src="js/d3.min.js"></script>
 
         <style type="text/css">
@@ -25,15 +30,27 @@
              .table th {
                 text-align: center;   
             }
+
+            .hero-unit h1 {
+                
+                font-size: 50px;
+
+            }
+            .hero-unit {
+                padding-top: 30px;
+                padding-bottom: 30px;
+                padding-right: 30px;
+                padding-left: 30px;
+            }
         </style>
         
     </head>
-    <body ng-controller="WeatherDataCtrl">
-        <div class="container" >
+    <body >
+        <div class="container" ng-controller="WeatherDataCtrl" >
             <div class="hero-unit span12">
                 <!--This is being updated by jQuery above. -->
-                <h1>Weather Station Data</h1>
-                <h2>@ CIVILIPSA, IES IPSA</h1>
+                <h1>Automatic Weather Station Display</h1>
+                <h2>Located @ CIVILIPSA, IES IPSA, Indore</h1>
                 <h3>Updating live...</h2>
                 
             </div>
@@ -51,6 +68,9 @@
             -->
 
             <!--Body content-->
+            <div>
+                <h4 ng-hide="hide_on_data">Wait for it ......</h4>
+            </div>
 
             <div class="table-responsive span10" >
                 <table class="table table-bordered table-striped table-hover weather_data">
@@ -83,6 +103,8 @@
             </div>
 
         </div>    
+
+        
         <script type="text/javascript">
               d3.select("body").select("div.hero-unit").style("background-color", "#6f5499"); 
               d3.select("body").select("div.hero-unit").selectAll("h1").style("color", "#fff").style("font-family", "Helvetica Neue', Helvetica, Arial, sans-serif"); 
@@ -90,5 +112,6 @@
               d3.select("body").select(".panel").style("background-color", "#428bca")
               d3.select("body").select(".panel").style("color", "#fff")
         </script>
+
     </body>
 </html>
