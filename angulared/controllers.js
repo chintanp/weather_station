@@ -16,19 +16,69 @@ var weatherApp = angular.module('weatherApp', []);
 
 weatherApp.controller('WeatherDataCtrl', function($scope, socket) { 
   $scope.weatherdata = [];
-  
+  $scope.hide_on_data = false;
   //Receive weather data from the http socket
 
+  socket.on('old_data', function(data) {
+
+        //alert("Inside Old Data");
+        console.log(data);
+        console.log("Old data " + data.livedata);
+        
+        if(data.livedata != " ")
+        {
+        	$scope.hide_on_data = true;
+        }
+        //Parsing the weather data to get usable information
+        var response = data.livedata;
+        var date = JSON.parse(response).date;
+        var time = JSON.parse(response).time;
+        var temperature = JSON.parse(response).temp_c;
+        var humidity = JSON.parse(response).humidity;
+        var pressure = JSON.parse(response).pressure_mbar;
+        var wind_dir = JSON.parse(response).wind_dir;
+        var wind_speed = JSON.parse(response).wind_speed_mps;
+        var rain = JSON.parse(response).rain_mm;
+        var solar_rad = JSON.parse(response).solar_rad_wpsqm;
+
+        var localObject = [];
+        var sensorName = "";
+        var sensorValue = "";
+        var sensorUnit = "";
+        
+        //Creating localObject by parsing the received data
+		     
+	  	localObject.push({"sensor" : "Date", "value": date, "unit" : " " });
+		localObject.push({"sensor" : "Time", "value": time, "unit" : " " });	
+		localObject.push({"sensor" : "Temperature", "value": temperature, "unit" : " Celsius " });	
+		localObject.push({"sensor" : "Humidity", "value": humidity, "unit" : " % " });    
+		localObject.push({"sensor" : "Atm_Pressure ", "value": pressure, "unit" : " mbar " });  
+		localObject.push({"sensor" : "Wind_Direction", "value": wind_dir, "unit" : " Degrees_N " }); 
+		localObject.push({"sensor" : "Wind_Speed", "value": wind_speed, "unit" : " mps " }); 
+		localObject.push({"sensor" : "Rain", "value": rain, "unit" : " mm " });
+		localObject.push({"sensor" : "Solar_Radiation", "value": solar_rad, "unit" : " w/m2 " });
+	
+	  	$scope.weatherdata =  localObject;
+	  	//debugger;
+	  	console.log($scope.weatherdata.length);
+    });
+
+
   socket.on('livedata', function(data) {
+  		//alert("Inside livedata");
         console.log(data);
         console.log("data.livedata: " + data.livedata);
         
+        if(data.livedata != " ")
+        {
+        	$scope.hide_on_data = true;
+        }
         //Parsing the weather data to get usable information
 
         var dataArray = data.livedata.split("\r\n");
         console.log("DataArray: " + dataArray);
 
-        //debugger;
+        debugger;
         //JSON.stringify(dataArray);
 
         // console.log("dataRow: " + dataRow);
@@ -53,7 +103,16 @@ weatherApp.controller('WeatherDataCtrl', function($scope, socket) {
 		      sensorName = dataRow[i].split(" ")[0];
 		      sensorValue = dataRow[i].split(" ")[1] ;
 		      sensorUnit = dataRow[i].split(" ")[2] ;
-		      console.log(sensorName + " : " + sensorValue + " : " + sensorUnit );
+		      
+
+		      if(sensorName === "Wind_Speed") {
+		      	sensorUnit = "mps";
+		      }
+		      else if (sensorName === "Rain") {
+		      	sensorUnit = "mm";
+		      }
+			  
+			  console.log(sensorName + " : " + sensorValue + " : " + sensorUnit );
 
 		      //Creating localObject by parsing the received data
 		      localObject.push({"sensor" : sensorName, "value": sensorValue, "unit" : sensorUnit });
@@ -64,6 +123,8 @@ weatherApp.controller('WeatherDataCtrl', function($scope, socket) {
 	  	//debugger;
 	  	console.log($scope.weatherdata.length);
     });
+
+	
 });
 
 
