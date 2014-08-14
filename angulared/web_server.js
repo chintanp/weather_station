@@ -53,7 +53,19 @@ var io = require('socket.io').listen(app);
 
 // Emit welcome message on connection
 io.sockets.on('connection', function(http_socket) {
-    http_socket.emit('welcome', { message: 'Welcome!' });
+    
+    //This function is called when a socket connection is established
+    //At this time, the mongodb query findOne, finds the most recent entry in the database,
+    // removes, id, lat and long from them and them emits the event 'old_data' alongwith 
+    // the data after some formatting.
+     db.raw_data.findOne({$query:{},$orderby:{$natural:-1}}, {_id: 0, lat: 0, long: 0}, function(err, doc) {
+      
+      // doc contains the data returned from the query
+      var row_data = doc;
+      row_data = JSON.stringify(row_data);
+      http_socket.emit('old_data', {livedata: row_data } );
+    });
+    
     http_socket.on('i am client', console.log);
 });
 
@@ -71,13 +83,18 @@ tcp_socket.on('connect', function(connect) {
   tcp_socket.setEncoding('ascii');
 });
 
+// This function is called everytime new data is received from the datalogger
+// i.e. when the 'data' event is triggered. The data is collected in variable data. 
+
 tcp_socket.on('data', function(data) {
         
-  console.log('DATA ' + tcp_socket.remoteAddress + ': ' + data);
+  //console.log('DATA ' + tcp_socket.remoteAddress + ': ' + data);
 
-  io.sockets.emit('livedata', { livedata: data });
+ // This event is emitted, observe the matching event in the frontend controller.
+ // It receives this sent livedata and updates the view accordingly.
+ io.sockets.emit('livedata', { livedata: data });
 
-  //var weatherdata = data.livedata;
+  
   
   //Parse the output from weather station into local variables that contain individual sensor's values
      
