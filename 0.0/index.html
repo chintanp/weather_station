@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+    <head>
+        <title>IPSA Weather Station</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--Bootstrap-->
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+        <!--jQuery-->
+        <script src='http://code.jquery.com/jquery-1.7.2.min.js'></script>
+        
+        <!--Socket.io -->
+        <script src='http://localhost:3000/socket.io/socket.io.js'></script>
+        
+        <!-- jQuery and socket.io code to get data from nodejs server in real-time-->
+        <script>
+            var socket = io.connect('//localhost:3000');
+
+            socket.on('welcome', function(data) {
+                $('#messages').html(data.message);
+
+                socket.emit('i am client', {data: 'foo!'});
+            });
+            socket.on('livedata', function(data) {
+                console.log(data);
+                var weatherdata = data.livedata;
+                
+                //Parse the output from weather station into local variables that contain individual sensor's values
+                
+                //Split to get the array
+                var dataArray = weatherdata.split(",");
+                
+                //To read about the format of returned string: refer to DT80 manual Pg: 22
+                var recordType = dataArray[0];
+                var serialNumber = dataArray[1];
+                var jobName = dataArray[2];
+                var date = dataArray[3];
+                var time = dataArray[4];
+                var subsec = dataArray[5];
+                var realtime = dataArray[6];
+                //var schedule = dataArray[7];          //Schedule is preceded by a semi-colon
+                var indexFirst = dataArray[7];
+                var firstData = dataArray[8];           //Temperature
+                var secondData = dataArray[9];         //Humidity
+                var thirdData = dataArray[10];          //Atmospheric Pressure
+                var fourthData = dataArray[11];         //Internal Temperature
+                var fifthData = dataArray[12];          //Wind Direction
+                var sixthData = dataArray[13];          //Wind Speed
+                var seventhData = dataArray[14];        //Rain    
+                var lastData = dataArray[15].split(";")     
+                var eighthData = lastData[0];            //Solar Radiation    
+                //var ninthData = dataArray[17];         //CRC error check   
+
+                //jQuery soup
+
+                //Assign the local variables to the html of various DOM ids
+                $('#curTime').html(date + " - " + time + " : " + subsec);
+                $('#temp').html(firstData + " C");
+                $('#intemp').html(fourthData + " C");
+                $('#hum').html(secondData + " %");
+                $('#pres').html(thirdData + " Bar");
+                $('#windd').html(fifthData + " Degrees from North");
+                $('#winds').html(sixthData + " m/s");
+                $('#rain').html(seventhData + " mm");
+                $('#solar').html(eighthData + " lumens/sec");
+                
+            });
+            socket.on('error', function() { console.error(arguments) });
+            socket.on('message', function() { console.log(arguments) });
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="hero-unit span12">
+                <!--This is being updated by jQuery above. -->
+                <h1>Weather Station Data</h1>
+                <h2>Updating live...</h2>
+                
+            </div>
+            
+            <div class="row-fluid span6">
+                <h3>Data last updated: </h3>
+                <p id="curTime"> </p>
+            </div>    
+            <div class="table-responsive span8" >
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Quantity</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>External Temperature</td>
+                            <td id="temp" ></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Internal Temperature</td>
+                            <td id="intemp"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Humidity</td>
+                            <td id="hum"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Atmospheric Pressure</td>
+                            <td id="pres"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Wind Speed</td>
+                            <td id="winds"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Wind Direction</td>
+                            <td id="windd"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Rainfall</td>
+                            <td id="rain"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Solar Radiation</td>
+                            <td id="solar"></td>
+                        </tr>
+                           
+                    </tbody>
+                </table>    
+            </div>
+            <div class="row-fluid span4">
+                <p> Weather station captures weather data and relays here in real-time. The weather data is also saved in a database as well as uploaded to openweathermap.org for free and open use. 
+                </br>
+                </br>
+                Contact hod.civil@ipsacademy.org for customized reports or to get the weather station setup. 
+                </p>
+            </div>
+
+        </div>    
+        
+    </body>
+</html>

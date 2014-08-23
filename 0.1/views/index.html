@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!doctype html>
+
+<html ng-app="weatherApp" lang="en">
+	<head>
+		<title>IPSA Weather Station</title>
+		<base href="/">
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<script type="text/javascript" src="js/lib/angular/angular.min.js"></script>
+		<script type="text/javascript" src="js/lib/angular/angular-route.min.js"></script>
+        <!--<script type="text/javascript" src="js/app.js"></script> -->
+        <script type="text/javascript" src="js/controllers.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+        
+        
+        <!--Bootstrap-->
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/bootstrap-responsive.min.css" rel="stylesheet" media="(max-device-width: 480px)">
+        
+        <!--Socket.io 
+        <script src='http://172.16.12.33:3000/socket.io/socket.io.js'></script> -->
+
+        <!-- d3.js for visualisation -->
+
+        <script src="js/lib/d3.min.js"></script>
+
+        <style type="text/css">
+
+
+            /* Large Desktop */
+            @media (min-width: 980px) {
+              
+            }
+            
+            /* Landscape phones and down */
+            
+            @media (max-width: 480px) {
+              
+            }
+
+            /* For all form factors */
+
+            body {
+               font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+            }
+            
+            .heading, .subheading {
+               font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+               text-align: center;
+            }
+            
+            p.lead {
+               padding-top: 1.5%;
+               font-size: 24px;
+               line-height: 30px;
+            }
+            p {
+               font-size: 18px;
+               line-height: 24px;
+            }
+
+         
+    
+            .table td {
+                text-align: center;   
+            }
+
+            .table th {
+                text-align: center;   
+            }
+
+            .hero-unit h1 {
+                
+                font-size: 50px;
+
+            }
+            .hero-unit {
+                padding-top: 30px;
+                padding-bottom: 30px;
+                padding-right: 30px;
+                padding-left: 30px;
+            }
+        </style>
+
+	</head>
+	<body>
+		<div class="container fluid" ng-controller="WeatherDataCtrl" >
+	            <div class="hero-unit span12">
+	                
+	                <h1>Automatic Weather Station Display</h1>
+	                <h2>Located @ CIVILIPSA, IES IPSA, Indore</h1>
+	                <h3>Updating live...</h2>
+	                
+	            </div>
+	            
+	            <!--Body content-->
+	            <div>
+	                <h4 ng-hide="hide_on_data">Wait for it ......</h4>
+	            </div>
+
+	            <div class="table-responsive span10" >
+	                <table class="table table-bordered table-striped table-hover weather_data">
+	                    <thead class="panel">
+	                        <tr>
+	                            <th>#</th>
+	                            <th>Quantity</th>
+	                            <th>Value</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody ng-repeat="weather_row in weatherdata | filter:query">
+	                    
+	                        <tr>
+	                            <td>{{ $index + 1 }}</td>
+	                            <td>{{ weather_row.sensor }}</td>
+	                            <td>{{ weather_row.value + " " + weather_row.unit }}</td>
+	                        </tr>
+	                                   
+	                    </tbody>
+	                </table>    
+	            </div>
+	                
+	           
+	            <div class="row-fluid span4">
+	                <p> Weather station captures weather data and relays here in real-time. The weather data is also saved in a database as well as uploaded to openweathermap.org for free and open use. 
+	                </br>
+	                </br>
+	                Contact hod.civil@ipsacademy.org for customized reports or to get information about the weather station setup. 
+	                </p>
+	            </div>
+
+	        </div>    
+
+	        
+	        <script type="text/javascript">
+	              d3.select("body").select("div.hero-unit").style("background-color", "#6f5499"); 
+	              d3.select("body").select("div.hero-unit").selectAll("h1").style("color", "#fff").style("font-family", "Helvetica Neue', Helvetica, Arial, sans-serif"); 
+	              d3.select("body").select("div.hero-unit").select("h2").style("color", "#cdbfe3");
+	              d3.select("body").select(".panel").style("background-color", "#428bca")
+	              d3.select("body").select(".panel").style("color", "#fff")
+	        </script>
+
+  
+
+
+		
+	</body>
+</html>
