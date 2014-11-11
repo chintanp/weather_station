@@ -122,7 +122,7 @@ weatherApp.factory('socket', function($rootScope) {
 
 	//Connect to the socket and expose events
 
-	var socket = io.connect("103.9.12.125:8000");
+	var socket = io.connect("/");
 	return {
 		on: function(eventName, callback) {
 			socket.on(eventName, function() {
